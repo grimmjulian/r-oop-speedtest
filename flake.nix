@@ -16,6 +16,7 @@
           S7
           R6
           microbenchmark
+          shiny
         ];
       };
     in
