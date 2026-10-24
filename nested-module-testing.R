@@ -55,6 +55,7 @@ testServer(server, {
 
 testServer(module_server, {
   message("Start test module_server function")
-  stop("Und hier weiß ich nicht wie ihc machen soll")
+  message(
+    "und wie kann ich hier einen wert für input server simulieren oder so?"
+  )
 })
-# testServer(module_server, {})
