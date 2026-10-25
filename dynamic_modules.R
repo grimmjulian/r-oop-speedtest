@@ -1,29 +1,64 @@
 library(shiny)
 
-input_ui <- function(id) {
-  ns <- shiny::NS(id)
+mod_ui <- function(id) {
+  label <- paste("For Input", id)
+  ns <- NS(id)
   shiny::tagList(
-    tags$h3(id),
-    numericInput(ns("input"), value = 0, label = "Module input")
-  )
+    numericInput(ns("in"), value = 0, label = label)
+  ) |>
+    tags$div(id = ns("mod"))
 }
 
-input_server <- function(id) {
-  shiny::moduleServer(id, function(input, output, session) {
-                        a <- reactive(input$input)
-    return(a)
+mod_server <- function(id) {
+  moduleServer(id, function(input, output, session) {
+    reactive(input[["in"]])
   })
 }
 
 ui <- fluidPage(
   verbatimTextOutput("output"),
-  input_ui("input_0"),
-  actionButton("Add", "add element")
+  mod_ui("1"),
+  actionButton("add", "add element"),
+  actionButton("remove", "remove element")
 )
 
 server <- function(input, output, session) {
-  a <- input_server("input_0")
+  a <- reactiveVal(0)
+
+  setup_module <- function(id) {
+    idx <- as.numeric(id)
+    val <- mod_server(as.character(id))
+
+    observeEvent(val(), {
+      current <- a()
+      current[idx] <- val()
+      a(current)
+    })
+  }
+
+  setup_module(1)
+
   output$output <- renderText(a())
+  observeEvent(input$add, {
+    a(c(a(), 0))
+    l <- length(a())
+    setup_module(l)
+    insertUI(
+      selector = "#add",
+      where = "beforeBegin",
+      ui = mod_ui(as.character(l))
+    )
+  })
+  observeEvent(input$remove, {
+    l <- length(a())
+    if (l > 1) {
+      a(a()[-l])
+      selector <- paste0("#", l, "-mod")
+      removeUI(
+        selector = selector
+      )
+    }
+  })
 }
 
 shiny::shinyApp(ui, server)
