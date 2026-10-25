@@ -23,9 +23,12 @@ module_ui <- function(id) {
 
 module_server <- function(id) {
   shiny::moduleServer(id, function(input, output, session) {
+    a <- reactiveVal()
+    observeEvent(input_server("mod_input"), {
+      a(input_server("mod_input"))
+    })
     output$mod_output <- renderText({
-      a <- input_server("mod_input")
-      paste("Double the module input", 2 * a)
+      paste("Double the module input", 2 * a())
     })
   })
 }
@@ -64,4 +67,10 @@ testServer(module_server, {
   message(
     "Aber kann ich irgendiwe den output von input_server direkt setzen, falls es was komplizierters ist?"
   )
+
+  message("das ist a ", a())
+  a(14)
+  message("das ist neues a ", a())
+  session$flushReact()
+  message("mod output is:", output$mod_output)
 })
