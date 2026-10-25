@@ -56,6 +56,12 @@ testServer(server, {
 testServer(module_server, {
   message("Start test module_server function")
   message(
-    "und wie kann ich hier einen wert für input server simulieren oder so?"
+    "Ich kann den input in meinem Module selber setzen, ",
+    "indem ich selber die ID setze"
+  )
+  session$setInputs(`mod_input-input` = 1)
+  message("mod output is:", output$mod_output)
+  message(
+    "Aber kann ich irgendiwe den output von input_server direkt setzen, falls es was komplizierters ist?"
   )
 })
